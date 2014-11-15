@@ -1,52 +1,54 @@
 {
-  "name": "node-express-mongoose",
-  "description": "A boilerplate application for express mongoose",
-  "version": "1.0.0",
-  "author": {
-    "name": "Madhusudhan Srinivasa",
-    "email": "me@madhums.me"
-  },
-  "engines": {
-    "node": "0.10.x"
-  },
+  "name": "edgy",
+  "version": "0.0.1",
+  "private": true,
   "scripts": {
-    "start": "NODE_PATH=./config:./app/controllers NODE_ENV=development ./node_modules/.bin/nodemon server.js",
-    "test": "make test"
+    "start": "app.js"
   },
   "dependencies": {
-    "async": "latest",
-    "body-parser": "^1.8.2",
-    "compression": "^1.1.0",
-    "connect-flash": "^0.1.1",
-    "connect-mongo": "^0.4.1",
-    "cookie-parser": "^1.3.3",
-    "cookie-session": "^1.0.2",
-    "csurf": "^1.6.1",
-    "express": "^4.9.3",
-    "express-session": "^1.8.2",
-    "forever": "^0.11.1",
-    "method-override": "^2.2.0",
-    "mongoose": "^3.9.2",
-    "mongoose-user": "0.0.1",
-    "morgan": "^1.3.1",
-    "passport": "^0.2.1",
-    "passport-local": "^1.0.0",
-    "swig": "^1.4.2",
-    "view-helpers": "^0.1.5",
-    "winston": "^0.8.0"
+    "express": "~3.3.4",
+    "jade": "~0.34.0",
+    "mongoose": "~3.6.14",
+    "passport": ">= 0.2.0",
+    "passport-google-oauth": "~0.1.5",
+    "passport-google-token": ">=0",
+    "passport-google": "~0.3.0",
+    "async": "~0.2.10",
+    "google-calendar": "~1.3.1",
+    "moment-range": "~1.0.0",
+    "underscore": "~1.6.0",
+    "moment": "~2.5.1",
+    "connect-mongo": "~0.4.0",
+    "request": "~2.34.0",
+    "googleapis": "*",
+    "inbox": "*",
+    "q": "*"
+
   },
+  "engine": "node >= 0.10.26",
   "devDependencies": {
-    "nodemon": "latest",
-    "mocha": "latest",
-    "should": "latest",
-    "supertest": "latest"
+    "grunt": "~0.4.1",
+    "grunt-develop": "~0.2.2",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-compass": "~0.6.0",
+    "request": "~2.27.0",
+    "time-grunt": "~0.1.1",
+    "load-grunt-tasks": "~0.2.0",
+    "grunt-contrib-stylus": "~0.13.2"
   },
+  "description": "plan ====",
+  "main": "Gruntfile.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/madhums/node-express-mongoose.git"
+    "url": "https://github.com/darshandesai/Edgy.git"
   },
   "keywords": [
-    "mvc",
-    "boilerplate"
-  ]
+    "Edgy"
+  ],
+  "author": "Darshan Desai",
+  "license": "None",
+  "bugs": {
+    "url": "https://github.com/darshandesai/Edgy/issues"
+  },
+  "homepage": "https://github.com/darshandesai/Edgy"
 }
