@@ -1,10 +1,10 @@
-
+  
 /**
  * Expose
  */
 
 module.exports = {
-  db: 'mongodb://localhost/your_project_production',
+  db: 'mongodb://darshan:doneappdoe@ds053370.mongolab.com:53370/heroku_app31624026',
   facebook: {
     clientID: 'APP_ID',
     clientSecret: 'SECRET',
