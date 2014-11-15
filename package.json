@@ -22,7 +22,8 @@
     "request": "~2.34.0",
     "googleapis": "*",
     "inbox": "*",
-    "q": "*"
+    "q": "*",
+    "hbs": "*",
 
   },
   "engine": "node >= 0.10.26",
