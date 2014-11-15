@@ -1,4 +1,5 @@
 var express = require('express')
+    , hbs = require('hbs')
     , mongoStore = require('connect-mongo')(express)
     , pkg = require('../package');
 
@@ -10,7 +11,9 @@ module.exports = function(app, config, passport) {
 
     app.set('port', config.port);
     app.set('views', config.root + '/app/views');
-    app.set('view engine', 'jade')
+    app.set('view engine', 'html');
+    app.engine('html', hbs.__express);   
+
 
     app.use(express.static(config.root + '/public'));
 

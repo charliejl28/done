@@ -44,6 +44,7 @@ fs.readdirSync(modelsPath).forEach(function (file) {
 var User = mongoose.model('User');
 
 var users = require('./app/controllers/users');
+var app = express();
 
 
 passport.serializeUser(function(user, done) {
@@ -57,6 +58,11 @@ passport.deserializeUser(function(id, done) {
 });
     
     
+
+
+
+
+
 passport.use(new GoogleTokenStrategy({
         clientID: config.clientID,
         clientSecret: config.clientSecret,
@@ -97,7 +103,7 @@ passport.use(new GoogleTokenStrategy({
 
 passport.use(new GoogleStrategy({
     clientID: config.clientID,
-    clientSecret: config.clientID,
+    clientSecret: config.clientSecret,
     callbackURL: config.clientURI
   },
   function(accessToken, refreshToken, profile, done) {
@@ -133,11 +139,6 @@ passport.use(new GoogleStrategy({
 
 );
 
-
-
-
-
-var app = express();
 
 require('./config/express')(app, config, passport);
 require('./config/routes')(app);
