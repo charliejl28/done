@@ -446,13 +446,18 @@ exports.respondToEmail = function(req, res){
 
         console.log(eventId)
         console.log(emailId)
-        res.json({email: emailId, event: eventId});
+        res.render('respond');
+        // res.json({email: emailId, event: eventId});
     }
     else {
         res.redirect('login');
     }
 
 };
+
+exports.respondSuccess = function(req, res){
+    res.render('respond');
+}
 
 exports.me = function(req, res){
  	if (req.user) {

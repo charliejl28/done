@@ -13,6 +13,7 @@ var users = require('../app/controllers/users')
 
     app.get('/create', users.createMeeting);
     app.get('/respond', users.respondToEmail);
+    app.get('/respond/success/', users.respondSuccess);
 
 
     app.post('/users/saveRefreshToken/', users.saveRefreshToken);
