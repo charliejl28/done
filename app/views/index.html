@@ -1,23 +1,29 @@
-<!doctype html>
+<!DOCTYPE html>
  
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Autocomplete</title>
+  <title>Done</title>
   <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
 </head>
+  
 
-  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+
+
+<body>
+ 
+  <input id="search" placeholder="Meet with John and Chris by Wednesday for 30 minutes"/>
+ 
+   <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-
-  <p id="fullstring"></p>
-  <p id="contacts"></p>
 
   <script>
 
   $(function() {
     var contacts = [];
-    
+
     $(document).on('keypress', '#search', function(e){
        $.ajax({
             url: "/create/",
@@ -65,13 +71,13 @@
 
           var terms = split( this.value );
           contacts.push( ui.item.value );
-          x.innerHTML = contacts.join(" ");
+          //x.innerHTML = contacts.join(" ");
           // remove the current input
           terms.pop();
           // add the selected item
           terms.push( ui.item.value );
           // add placeholder to get the comma-and-space at the end
-          terms.push( ", " );
+          terms.push( "" );
           this.value = terms.join( " " );
           fullstring = this.value;
 
@@ -81,14 +87,7 @@
       });
   });
   </script>
-
-
-<body>
- 
-<div>
-  <input id="search" size="100" />
-</div>
- 
  
 </body>
+
 </html>

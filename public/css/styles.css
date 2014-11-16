@@ -1,0 +1,10 @@
+body{
+	text-align: center;
+}
+#search{
+	height: 200px;
+	width: 50%;
+	margin:auto;
+	text-align: center;
+	font-size:34px;
+}

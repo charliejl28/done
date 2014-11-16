@@ -78,11 +78,11 @@ exports.findMeetingTime = function(req, res){
 exports.scheduleEvent = function(event){
 
 	var allBusyTimes = _.flatten(event.responses);
-	var timeMin = event.timeMin;
-	var timeMax = event.timeMax;
+	var timeMin = moment(event.timeMin);
+	var timeMax = moment(event.timeMax);
 	var duration = event.duration;
 
-	data = findTimeAndSchedule(allBusyIntervals, timeMin, timeMax, duration);
+	data = findTimeAndSchedule(allBusyTimes, timeMin, timeMax, duration);
 	event.startTime = data.start;
 	event.endTime = data.end;
 	event.save();

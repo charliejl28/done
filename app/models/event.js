@@ -8,13 +8,14 @@ var EventSchema = new Schema({
 	calendar: String,
 	attendees: [],
 	responses: [{
-		email: String,
-		//free: 
-
+		busy: [],
 	}],
 	timeMin: Date,
 	timeMax: Date,
 	duration: Number,
+	
+	startTime: Date,
+	endTime: Date,
 });
 
 

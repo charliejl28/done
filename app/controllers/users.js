@@ -7,11 +7,12 @@ var mongoose = require('mongoose')
     , calendar = google.calendar('v3')
     , OAuth2 = google.auth.OAuth2
     , config = require('../../config/config')
-    , oauth2Client = new OAuth2(config.clientId, config.clientSecret, config.clientURI);
- 
+    , oauth2Client = new OAuth2(config.clientId, config.clientSecret, config.clientURI)
+    , _ = require('underscore')
+    , events = require('../../app/controllers/events');
 
 exports.login = function(req, res){
-    res.render('/auth/google')
+    res.redirect('/auth/google/')
 };
 
 exports.logout = function(req, res){
@@ -275,10 +276,11 @@ exports.createMeeting = function(req, res){
     console.log('task due date ');
     console.log(taskDueDate);
 
-    
+    var allContactEmails = contactEmails;
+
     var event = {};
     event.name = taskName;
-    event.attendees = contacts;
+    event.attendees = allContactEmails.push(req.user.email);
     event.timeMin = moment().toDate();
     event.timeMax = taskDueDate ? taskDueDate : moment().add(2, 'days');
     event.duration = 30;
@@ -392,12 +394,21 @@ exports.respondToEmail = function(req, res){
                                 console.log(results.calendars)
                                 for (var i = 0;i < calendarLists.length; i++){
                                     var calName = calendarLists[i].id;
-                                    busyTimes.push(results.calendars[calName].busy);
+                                    if (results.calendars[calName] && results.calendars[calName].busy && results.calendars[calName].busy.length > 0){
+                                        busyTimes.push(results.calendars[calName].busy);
+                                    }
                                 }
+                                busyTimes = _.flatten(busyTimes) 
+                                var responded = {};
+                                responded.busy = busyTimes;
                                 console.log(busyTimes);
-                                //event.save();
 
+                                event.responses.push(responded);
 
+                                event.save();
+
+                                events.scheduleEvent(event);
+                                console.log(event);
                             });
 
                         });
