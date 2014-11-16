@@ -269,26 +269,43 @@ exports.createMeeting = function(req, res){
         var contactParts = contacts[i].split(' ');
         var email = contactParts.slice(-1).pop()
         contactEmails.push(email);
-        contactBoth.push({email:email, name: contactParts.join(' ')});
+        contactBoth.push(email);
         taskName = taskName.replace(contactName, '');
         taskName= taskName.replace('with', "");
         taskName = taskName.replace('With', "");
 
     }
+
     console.log('task due date ');
     console.log(taskDueDate);
+    console.log(contactBoth);
 
-    var event = {};
+
+    var event = {attendees : []};
     event.name = taskName;
-    event.attendees = contactBoth.push({name: req.user.name, email:req.user.email});
+    //contactBoth.push({name: req.user.name, email:})
+    event.attendees.push(req.user.email);
+
+
+
+
     event.timeMin = moment().toDate();
-    event.timeMax = taskDueDate ? taskDueDate : moment().add(2, 'days');
+    event.timeMax = taskDueDate ? taskDueDate : moment().add(2, 'days').toDate();
     event.duration = 30;
     console.log("event");
-
+    console.log(event);
         Event.create(event, function(err, event) {
             console.log(err);
             if (!err){
+
+                User
+                .find({"_id" : req.user.id})
+                .exec( function (err, user) {
+                    if (!err && user && user[0]){
+                        var user = user[0];
+                        addFreeBusy(req.user, event._id)
+                    }
+                });
 
                 var transporter = nodemailer.createTransport({
                     service: 'Gmail',
@@ -298,7 +315,7 @@ exports.createMeeting = function(req, res){
                     }
                 });
 
-
+                console.log(contactEmails);
                 for (var i = 0; i < contactEmails.length; i++){
                     // NB! No need to recreate the transporter object. You can use
                     // the same transporter object for all e-mails
@@ -343,6 +360,71 @@ function setoauthCredentials(user){
     console.log(oauth2Client);
 }
 
+function addFreeBusy(user, eventId){
+
+    setoauthCredentials(user);
+
+    calendar.calendarList.list({ auth:oauth2Client }, function(err, results){
+        console.log(err);
+        if (results && results.items){
+            var calendarLists = results.items;
+
+            for (var xy = 0; xy < calendarLists.length; xy++){
+                if (calendarLists[xy].primary){
+                    user.set('primaryCalendar', calendarLists[xy].id);
+                    user.set('primaryCalendarSummary', calendarLists[xy].summary);
+                    user.set('primaryCalendarColor', calendarLists[xy].backgroundColor);
+                }
+            }
+            if (user.primaryCalendar == undefined){
+                user.set('primaryCalendar', calendarLists[0].id);
+                user.set('primaryCalendarSummary', calendarLists[0].summary);
+                user.set('primaryCalendarColor', calendarLists[0].backgroundColor);
+            }
+            user.save(function(err){
+                console.log(err);
+            });
+            console.log("calendar lists");
+
+            Event.findById(eventId, function (err, event) {
+                var items = [];
+                for (var i = 0; i < calendarLists.length; i++){
+                    items.push({"id":calendarLists[i].id});
+                }
+                var timeMin  = moment(event.timeMin).format('YYYY-MM-DDTHH:mm:ssZ')
+                // 
+                var jsonz = {'auth':oauth2Client, resource:{"timeMin": timeMin, 'timeMax': moment(event.timeMax).format('YYYY-MM-DDTHH:mm:ssZ'), items: items, timeZone: "EST"} };
+                console.log( jsonz);
+                var busyTimes = [];
+                calendar.freebusy.query(jsonz, function(err, results){
+                    console.log(results)
+                    console.log(results.calendars)
+                    for (var i = 0;i < calendarLists.length; i++){
+                        var calName = calendarLists[i].id;
+                        if (results.calendars[calName] && results.calendars[calName].busy && results.calendars[calName].busy.length > 0){
+                            busyTimes.push(results.calendars[calName].busy);
+                        }
+                    }
+                    busyTimes = _.flatten(busyTimes) 
+                    var responded = {};
+                    responded.busy = busyTimes;
+                    console.log(busyTimes);
+
+                    event.responses.push(responded);
+
+                    event.save();
+
+                    if (event.responses.length == event.attendees.length){
+                        events.scheduleEvent(user, event);
+                    }
+                    console.log(event);
+                });
+
+            });
+        }
+    });
+}
+
 exports.respondToEmail = function(req, res){
     console.log("made it")
     if (req.user){
@@ -354,77 +436,9 @@ exports.respondToEmail = function(req, res){
         .exec( function (err, user) {
             if (!err && user && user[0]){
                 var user = user[0];
-
-                setoauthCredentials(user);
-
-                calendar.calendarList.list({ auth:oauth2Client }, function(err, results){
-                    console.log(err);
-                    if (results && results.items){
-                        var calendarLists = results.items;
-
-                        for (var xy = 0; xy < calendarLists.length; xy++){
-                            if (calendarLists[xy].primary){
-                                user.set('primaryCalendar', calendarLists[xy].id);
-                                user.set('primaryCalendarSummary', calendarLists[xy].summary);
-                                user.set('primaryCalendarColor', calendarLists[xy].backgroundColor);
-                            }
-                        }
-                        if (user.primaryCalendar == undefined){
-                            user.set('primaryCalendar', calendarLists[0].id);
-                            user.set('primaryCalendarSummary', calendarLists[0].summary);
-                            user.set('primaryCalendarColor', calendarLists[0].backgroundColor);
-                        }
-                        user.save(function(err){
-                            console.log(err);
-                        });
-                        console.log("calendar lists");
-
-                        Event.findById(eventId, function (err, event) {
-                            var items = [];
-                            for (var i = 0; i < calendarLists.length; i++){
-                                items.push({"id":calendarLists[i].id});
-                            }
-                            var timeMin  = moment(event.timeMin).format('YYYY-MM-DDTHH:mm:ssZ')
-                            // 
-                            var jsonz = {'auth':oauth2Client, resource:{"timeMin": timeMin, 'timeMax': moment(event.timeMax).format('YYYY-MM-DDTHH:mm:ssZ'), items: items, timeZone: "EST"} };
-                            console.log( jsonz);
-                            var busyTimes = [];
-                            calendar.freebusy.query(jsonz, function(err, results){
-                                console.log(results)
-                                console.log(results.calendars)
-                                for (var i = 0;i < calendarLists.length; i++){
-                                    var calName = calendarLists[i].id;
-                                    if (results.calendars[calName] && results.calendars[calName].busy && results.calendars[calName].busy.length > 0){
-                                        busyTimes.push(results.calendars[calName].busy);
-                                    }
-                                }
-                                busyTimes = _.flatten(busyTimes) 
-                                var responded = {};
-                                responded.busy = busyTimes;
-                                console.log(busyTimes);
-
-                                event.responses.push(responded);
-
-                                event.save();
-
-                                events.scheduleEvent(user, event);
-                                console.log(event);
-                            });
-
-                        });
-
-
-
-
-
-
-                    }
-                });
+                addFreeBusy(user, eventId)
             }
         });
-
-
-
 
         console.log(eventId)
         console.log(emailId)

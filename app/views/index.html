@@ -15,7 +15,7 @@
 <body>
  
   <input id="search" placeholder="Meet with John and Chris by Wednesday for 30 minutes"/>
- 
+  <a id="submit">Send</a>
    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 
@@ -24,7 +24,7 @@
   $(function() {
     var contacts = [];
 
-    $(document).on('keypress', '#search', function(e){
+    $(document).on('click', '#submit', function(e){
        $.ajax({
             url: "/create/",
             dataType: "json",
@@ -71,7 +71,7 @@
 
           var terms = split( this.value );
           contacts.push( ui.item.value );
-          //x.innerHTML = contacts.join(" ");
+          //sx.innerHTML = contacts.join(" ");
           // remove the current input
           terms.pop();
           // add the selected item

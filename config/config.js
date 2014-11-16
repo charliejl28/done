@@ -1,6 +1,6 @@
 var path = require('path'),
     rootPath = path.normalize(__dirname + '/..'),
-    env = 'prod';
+    env = 'dev';
 
 var config = {
   dev: {
@@ -13,7 +13,7 @@ var config = {
     clientID: "1069981559961-ltvhjr59207g5j3pi30nr9pvu7smk3hk.apps.googleusercontent.com",
     clientSecret: "cP-9DTfMpkAnT8Gnuq2GxE_H",
 
-    clientURI: "http://localhost:5000/auth/google/callback",
+    clientURI: "http://10.9.49.248:5000/auth/google/callback",
   },
   prod: {
     root: rootPath,
