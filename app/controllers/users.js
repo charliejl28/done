@@ -263,11 +263,13 @@ exports.createMeeting = function(req, res){
         }  
     }
     var contactEmails = [];
+    var contactBoth = [];
     for (var i = 0; i < contacts.length; i++){
         var contactName = contacts[i]
         var contactParts = contacts[i].split(' ');
         var email = contactParts.slice(-1).pop()
         contactEmails.push(email);
+        contactBoth.push({email:email, name: contactParts.join(' ')});
         taskName = taskName.replace(contactName, '');
         taskName= taskName.replace('with', "");
         taskName = taskName.replace('With', "");
@@ -276,11 +278,9 @@ exports.createMeeting = function(req, res){
     console.log('task due date ');
     console.log(taskDueDate);
 
-    var allContactEmails = contactEmails;
-
     var event = {};
     event.name = taskName;
-    event.attendees = allContactEmails.push(req.user.email);
+    event.attendees = contactBoth.push({name: req.user.name, email:req.user.email});
     event.timeMin = moment().toDate();
     event.timeMax = taskDueDate ? taskDueDate : moment().add(2, 'days');
     event.duration = 30;

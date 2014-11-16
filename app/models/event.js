@@ -6,14 +6,18 @@ var mongoose = require('mongoose')
 var EventSchema = new Schema({
 	name: String,
 	calendar: String,
-	attendees: [],
+	attendees: [{
+		name: String,
+		email: String,
+		}
+	],
 	responses: [{
 		busy: [],
 	}],
 	timeMin: Date,
 	timeMax: Date,
 	duration: Number,
-	
+
 	startTime: Date,
 	endTime: Date,
 });

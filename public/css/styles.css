@@ -1,10 +1,21 @@
-body{
-	text-align: center;
+
+@font-face {
+    font-family: 'avenir-regular-light';
+    src: url('Avenir_Next_Light.ttf');
 }
+
+body{
+	border-top:7px solid #93B9F4;
+	text-align: center;
+	font-family: 'avenir-regular-light', sans-serif;
+}
+
 #search{
 	height: 200px;
 	width: 50%;
 	margin:auto;
 	text-align: center;
 	font-size:34px;
+	border: 0;
+	outline: none;
 }
