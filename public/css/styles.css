@@ -10,7 +10,21 @@ body{
 	font-family: 'avenir-regular-light', sans-serif;
 	color:#808080;
 }
-
+#submit{
+	text-transform: uppercase;
+	font-size:  12px;
+	line-height: 1;
+	transition: background-color, color .2s linear;
+	background: transparent;
+	border: 1px solid #93B9F4;
+	color: #93B9F4;
+	border-radius:5px;
+	padding:15px 30px;
+}
+#submit:hover{
+	background-color: #93B9F4;
+	color: white;
+}
 #search{
 	height: 200px;
 	width: 50%;

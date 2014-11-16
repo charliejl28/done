@@ -14,8 +14,8 @@
 
 <body>
  
-  <input id="search" placeholder="Meet with John and Chris by Wednesday for 30 minutes"/>
-  <a id="submit">Send</a>
+  <input id="search" autocomplete="off" placeholder="Have Coffee with John and Chris by Weds."/>
+  <br><a href="#" class="btn" id="submit">Schedule</a>
    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 
@@ -25,6 +25,7 @@
     var contacts = [];
 
     $(document).on('click', '#submit', function(e){
+      e.preventDefault();
        $.ajax({
             url: "/create/",
             dataType: "json",
