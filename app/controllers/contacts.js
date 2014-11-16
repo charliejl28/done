@@ -13,7 +13,7 @@ var mongoose = require('mongoose')
 
 exports.search = function(req, res){
 
-	var query = req.query.queryString;
+	var query = req.query.q;
 
 	console.log("query: " + query);
 
@@ -105,7 +105,7 @@ function confirmAndGetContactSuggestions(res, user, queryString){
 }
 
 function getContactSuggestions(res, user, queryString){
-	var url = "https://www.google.com/m8/feeds/contacts/" + user.email + "/full?access_token=" + user.accessToken + "&q=" + queryString + "&alt=json&max-results=1000";
+	var url = "https://www.google.com/m8/feeds/contacts/" + user.email + "/full?access_token=" + user.accessToken + "&q=\"" + queryString + "\"&alt=json&max-results=10&v=3.0";
 	console.log(url);
 	request(
 		{
@@ -139,8 +139,8 @@ function getContactSuggestions(res, user, queryString){
 					if (googleContact.gd$email && googleContact.gd$email[0])
 						ourContact.email = googleContact.gd$email[0].address
 
-					ourContacts.push(contact);
-					console.log(contact)
+					ourContacts.push(ourContact);
+					console.log(ourContact)
 
 				}
 
