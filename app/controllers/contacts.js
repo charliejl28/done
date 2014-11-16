@@ -8,7 +8,7 @@ var mongoose = require('mongoose')
   	, OAuth2 = googleapis.auth.OAuth2
     , config = require('../../config/config')
     , http = require('http')
-
+    , oauth2Client = new OAuth2(config.clientID, config.clientSecret, config.clientURI)
   	, _ = require('underscore');
 
 exports.search = function(req, res){
@@ -21,13 +21,12 @@ exports.search = function(req, res){
 	console.log(req.user);
 
 
-	contactsJSON = confirmAndGetContactSuggestions(req.user, query);
-
-	res.json( {'status' : true, 'data': contactsJSON } );
+	contactsJSON = confirmAndGetContactSuggestions(res, req.user, query);
 }
 
 function confirmOAuthSession(user){
-	if (!user.accessToken){
+
+	// if (!user.accessToken){
         console.log(user.refreshToken);
         oauth2Client.setCredentials({
             refresh_token: user.refreshToken
@@ -45,37 +44,69 @@ function confirmOAuthSession(user){
                 return;
             }
         });
-    }
+//     }
 }
 
 // find contact suggestions
 // parameters: user, query string
 // action: Google GET request, search for matching contacts
 // return: matching user contacts
-function confirmAndGetContactSuggestions(user, queryString){
-	if (!user.accessToken){
-        console.log(user.refreshToken);
-        oauth2Client.setCredentials({
-            refresh_token: user.refreshToken
-        });
+function confirmAndGetContactSuggestions(res, user, queryString){
 
-        oauth2Client.refreshAccessToken( function(err, tokens) {
-            if (tokens){
-                user.accessToken = tokens.access_token;
-                user.save();
+	console.log("confirming and getting contacts");
 
-                getContactSugestions(user, queryString);
+	console.log("no access token");
+
+	console.log(user.refreshToken);
+// 	oauth2Client.setCredentials({
+// 		refresh_token: user.refreshToken
+// 	});
+
+// 	oauth2Client.refreshAccessToken( function(err, tokens) {
+// 		if (tokens){
+// 			user.accessToken = tokens.access_token;
+// 			user.save();
+
+// 			getContactSuggestions(res, user, queryString);
+// 		}
+//             else {
+//                 res.send(500, err)
+//                 return;
+//             }
+//         });
+
+	request({
+            uri: "https://accounts.google.com/o/oauth2/token",
+            method: "POST",
+            form: {
+                refresh_token:user.refreshToken, 
+                client_id:config.clientID, 
+                client_secret:config.clientSecret, 
+                grant_type:"refresh_token"  
             }
-            else {
-                res.send(500, err)
-                return;
-            }
-        });
+      }, function(error, response, body) {
+
+		console.log(response);
+		if (!error && response.statusCode == 200) {
+			var access_token = JSON.parse(body).access_token;
+
+			user.accessToken = access_token;
+			user.save();
+
+			getContactSuggestions(res, user, queryString);
+		}
+        else {
+			res.send(500, err)
+			return;
+        }
     }
+
+	);
+
 }
 
-function getContactSuggestions(user, queryString){
-	var url = "https://www.google.com/m8/feeds/contacts/default/full?q=" + queryString + "&alt=json&max-results=1000";
+function getContactSuggestions(res, user, queryString){
+	var url = "https://www.google.com/m8/feeds/contacts/" + user.email + "/full?access_token=" + user.accessToken + "&q=" + queryString + "&alt=json&max-results=1000";
 	console.log(url);
 	request(
 		{
@@ -83,8 +114,15 @@ function getContactSuggestions(user, queryString){
 			method: "GET",
 		}, 
 		function(error, response, body) {
+
+			console.log("returned");
+
 			// success retrieving contacts
 			if (!error && response.statusCode == 200) {
+			// if (!error) {
+
+
+				console.log("success");
 
 				var googleContacts = JSON.parse(body).feed.entry;
 				var ourContacts = [];
@@ -109,7 +147,13 @@ function getContactSuggestions(user, queryString){
 
 				// create json
 				var jsonResult = JSON.stringify(ourContacts);
-				return jsonResult;
+				res.json({'sucess' : true, 'data' : jsonResult});
+			}
+			else {
+				console.log("failed");
+				console.log("error: ");
+				console.log(error);
+				console.log(response.statusCode);
 			}
 		}
 	);
