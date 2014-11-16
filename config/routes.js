@@ -18,6 +18,8 @@ var users = require('../app/controllers/users')
 
     app.get('/events/upcoming/', events.upcoming);
     app.get('/events/test/', events.test);
+    app.get('/event/schedule/', events.schedule);
+    app.get('/event/invite', events.googleEvent);
 
 
     // app.get('/contacts/update/', contacts.update);

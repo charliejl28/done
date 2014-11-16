@@ -10,6 +10,7 @@ var mongoose = require('mongoose')
 
   	, request = require('request')
   	, googleapis = require('googleapis')
+  	, calendar = googleapis.calendar('v3')
   	, OAuth2 = googleapis.auth.OAuth2
     , config = require('../../config/config')
     , moment = require('moment')
@@ -35,6 +36,178 @@ exports.test = function(req, res){
     }
 }
 
+// NEED: invitee email, accessToken, eventID
+// retrieves freeBusy for given invitee
+// saves to event 
+// calls findMeetingTime if all freeBusy's received
+exports.getFreeBusy = function(req, res){
+
+
+
+}
+
+
+
+// NEED: eventID
+// search through all invitees freeBusies
+// finds mutually free time long enough for meeting occurring within meeting scheduling window 
+// calls createGoogleEvent
+exports.findMeetingTime = function(req, res){
+
+	// test data
+	var yoBusyString = '[{ "start": "2014-11-17T09:00:00-05:00", "end": "2014-11-17T12:20:00-05:00"},{ "start": "2014-11-17T14:00:00-05:00", "end": "2014-11-17T16:00:00-05:00"},{ "start": "2014-11-17T19:30:00-05:00", "end": "2014-11-17T21:50:00-05:00"},{ "start": "2014-11-18T13:30:00-05:00", "end": "2014-11-18T14:50:00-05:00"},{ "start": "2014-11-19T11:00:00-05:00", "end": "2014-11-19T12:20:00-05:00"},{ "start": "2014-11-20T13:30:00-05:00", "end": "2014-11-20T14:50:00-05:00"}]';
+
+	var cjBusyString = '[{ "start": "2014-11-17T00:00:00-05:00", "end": "2014-11-17T10:00:00-05:00"},{ "start": "2014-11-17T11:30:00-05:00", "end": "2014-11-17T12:30:00-05:00"},{ "start": "2014-11-17T13:00:00-05:00", "end": "2014-11-17T14:00:00-05:00"},{ "start": "2014-11-17T16:00:00-05:00", "end": "2014-11-17T17:00:00-05:00"},{ "start": "2014-11-17T18:00:00-05:00", "end": "2014-11-18T00:00:00-05:00"},{ "start": "2014-11-20T19:30:00-05:00", "end": "2014-11-20T21:30:00-05:00"}]';
+
+	cjBusy = JSON.parse(cjBusyString);
+	yoBusy = JSON.parse(yoBusyString);
+
+	var allBusyIntervals = [cjBusy, yoBusy];
+	var numInvites = allBusyIntervals.length;
+	var scheduleMin = moment("2014-11-17T00:00:00-05:00");
+	var duration = 30;
+	var interval = 15;
+	var scheduleMax = moment("2014-11-18T00:00:00-05:00").subtract(interval, 'm');
+
+	var meetingStart = scheduleMin;
+	// console.log("start: " + meetingStart.format());
+	var meetingEnd = moment(meetingStart);
+	meetingEnd.add(duration, 'm');
+	// console.log("end: " + meetingEnd.format());
+	
+	// go through each possible meeting, on each interval
+	for (;meetingEnd.isBefore(scheduleMax);){
+
+		meetingStart.add(interval, 'm');
+		// console.log("___________0");
+		// console.log("start: " + meetingStart.format());
+		meetingEnd = moment(meetingStart);
+		meetingEnd.add(duration, 'm');
+		// console.log("end: " + meetingEnd.format());
+
+
+		// console.log("Trying meeting (" + meetingStart.format() + " | " + meetingEnd.format() + ")");
+
+		nextMeetingCheck:
+		// go through each person
+		for (var iPerson = 0; iPerson < numInvites; iPerson++){
+
+			// console.log("checking with person " + iPerson);
+
+			var theseBusyIntervals = allBusyIntervals[iPerson];
+			var numIntervals = theseBusyIntervals.length;
+
+			// go through their day
+			for (var iBusy = 0; iBusy < numIntervals - 1; iBusy++){
+
+				// console.log("   checking interval " + iBusy);
+
+				var thisInterval = theseBusyIntervals[iBusy];
+				var thisStart = moment(thisInterval.start);
+				var thisEnd = moment(thisInterval.end);
+				var nextInterval = theseBusyIntervals[iBusy + 1];
+				var nextStart = moment(nextInterval.start);
+				var nextEnd = moment(nextInterval.end);
+
+				// meeting starts too soon
+				if (meetingStart.isBefore(thisEnd)){
+					// console.log("meeting starts too soon");
+					while (meetingStart.isBefore(thisEnd)){
+						meetingStart = meetingStart.add(interval, 'm');
+					}
+					// console.log("___________1");
+					// console.log("start: " + meetingStart.format());
+					meetingEnd = moment(meetingStart);
+					meetingEnd.add(duration, 'm');
+					// console.log("end: " + meetingEnd.format());
+					break nextMeetingCheck;
+				}
+
+				// meeting goes into next busy time
+				if (meetingStart.isBefore(nextStart) && nextStart.isBefore(meetingEnd)){
+					// console.log("meeting runs too long");
+					while (meetingStart.isBefore(nextEnd)){
+						meetingStart = meetingStart.add(interval, 'm');
+						meetingEnd = moment(meetingStart);
+						meetingEnd.add(duration, 'm');
+						// console.log("start: " + meetingStart.format());
+						// console.log("end: " + meetingEnd.format());
+					}
+					// console.log("___________2");
+					// console.log("start: " + meetingStart.format());
+					// console.log("end: " + meetingEnd.format());
+					break nextMeetingCheck;
+				}
+
+				// works for this person
+				if (thisEnd.isBefore(meetingStart) && meetingEnd.isBefore(nextStart)){
+					// console.log("works for person " + iPerson);	
+					break;
+				}
+			}
+		}
+
+		// works for everyone
+		if (iPerson == numInvites){
+			break;
+		}
+	}
+
+	console.log("FOUND A MEETING TIME FOR EVERYONE");
+	console.log(meetingStart.format());
+	console.log(meetingEnd.format());
+
+	data = {'start': meetingStart, 'end': meetingEnd};
+
+	res.json({'success': true, 'data': data});
+
+}
+
+exports.googleEvent = function(req, res){
+	createGoogleEvent(req.user, res, 'Meeting for coffee', '2014-11-17T22:15:00.000Z', '2014-11-17T22:45:00.000Z', [{'name': 'Charlie (work)', 'email':'charlie@firestopapp.com'}, {'name': 'Darshan', 'email':'darshan.desai17@gmail.com'}]);
+}
+
+// NEED: event name, start, end, invitees
+// creates Google Event for meeting (should send out invites)
+function createGoogleEvent(user, res, name, startDateTime, endDateTime, invitees){
+	var oauth2Client = new OAuth2(config.clientID, config.clientSecret, config.clientURI);
+	oauth2Client.setCredentials({
+        access_token: user.accessToken,
+        refresh_token: user.refreshToken
+    });
+
+	var attendees = [];
+	for (var i = 0; i < invitees.length; i++){
+		var attendee = {};
+		attendee['email'] = invitees[i].email;
+		attendee['displayName'] = invitees[i].name;
+		attendees.push(attendee);
+	}
+
+	calendar.events.insert(
+		{ 
+			auth:oauth2Client, 
+			calendarId: user.primaryCalendar, 
+			sendNotifications: true,
+			resource: {
+				'end': {
+					'dateTime': endDateTime
+				},
+				'start': {
+					'dateTime': startDateTime
+				},
+				"summary": name,
+				"attendees": attendees
+			}
+		}, 
+		function(err, item){
+			console.log(err);
+			if(err) return res.send(500, err);
+			console.log(item);
+			res.json(item);
+        }
+    );
+}
 
 exports.upcoming = function(req, res){
 	if (req.user){
