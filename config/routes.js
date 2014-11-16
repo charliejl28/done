@@ -4,7 +4,7 @@ var users = require('../app/controllers/users')
 	, contacts = require('../app/controllers/contacts')
 	, mails = require('../app/controllers/mails');
 
-
+    app.get('/', users.index);
     app.get('/login', users.login);
     app.get('/logout', users.logout);
 
@@ -12,6 +12,8 @@ var users = require('../app/controllers/users')
     app.get('/users/me', users.me);
 
     app.get('/create', users.createMeeting);
+    app.get('/respond', users.respondToEmail);
+
 
     app.post('/users/saveRefreshToken/', users.saveRefreshToken);
 

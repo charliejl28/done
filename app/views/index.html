@@ -5,6 +5,8 @@
   <meta charset="utf-8" />
   <title>Autocomplete</title>
   <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+</head>
+
   <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 
@@ -15,6 +17,20 @@
 
   $(function() {
     var contacts = [];
+    
+    $(document).on('keypress', '#search', function(e){
+       $.ajax({
+            url: "/create/",
+            dataType: "json",
+            data: {
+              emails: contacts,
+              text: $('#search').val(),
+            },
+            success: function( data ) {
+              console.log(data);
+            }
+          });
+    });
     var fullstring = "";
 
     function split( val ) {
@@ -30,11 +46,12 @@
         source: function( request, response ) {
           $.ajax({
             url: "/contacts/search/",
-            dataType: "jsonp",
+            dataType: "json",
             data: {
               q: extractLast(request.term)
             },
             success: function( data ) {
+              console.log(data);
               response( data );
             }
           });
@@ -54,18 +71,17 @@
           // add the selected item
           terms.push( ui.item.value );
           // add placeholder to get the comma-and-space at the end
-          terms.push( "" );
+          terms.push( ", " );
           this.value = terms.join( " " );
           fullstring = this.value;
 
-          y.innerHTML = fullstring;
+          //y.innerHTML = fullstring;
           return false;
         }
       });
   });
   </script>
 
-</head>
 
 <body>
  
