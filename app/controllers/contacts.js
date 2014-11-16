@@ -74,7 +74,6 @@ function confirmAndGetContactSuggestions(res, user, queryString){
 //                 return;
 //             }
 //         });
-
 	request({
             uri: "https://accounts.google.com/o/oauth2/token",
             method: "POST",
@@ -82,11 +81,11 @@ function confirmAndGetContactSuggestions(res, user, queryString){
                 refresh_token:user.refreshToken, 
                 client_id:config.clientID, 
                 client_secret:config.clientSecret, 
-                grant_type:"refresh_token"  
+                grant_type:"refresh_token"  ,
             }
       }, function(error, response, body) {
-
-		console.log(response);
+	console.log(body)
+		console.log(response.statusCode);
 		if (!error && response.statusCode == 200) {
 			var access_token = JSON.parse(body).access_token;
 
@@ -96,7 +95,7 @@ function confirmAndGetContactSuggestions(res, user, queryString){
 			getContactSuggestions(res, user, queryString);
 		}
         else {
-			res.send(500, err)
+			res.send(500, error)
 			return;
         }
     }

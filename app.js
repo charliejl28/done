@@ -146,6 +146,8 @@ require('./config/routes')(app);
 app.get('/auth/google', passport.authenticate('google', { scope: 
                                             ['https://www.googleapis.com/auth/userinfo.profile',
                                             'https://www.googleapis.com/auth/userinfo.email', 
+                                            'https://www.google.com/m8/feeds',
+
                                             'https://www.googleapis.com/auth/calendar'],
                                             accessType: 'offline'
                                         }));
@@ -164,6 +166,8 @@ app.get('/auth/google-iOS', passport.authenticate('google-token',
 { scope: ['https://www.googleapis.com/auth/userinfo.profile',
                                             'https://www.googleapis.com/auth/userinfo.email', 
                                             'https://www.googleapis.com/auth/calendar',
+                                            'https://www.google.com/m8/feeds',
+                                            
                                             ], accessType: 'offline', failureRedirect: '/login' }),
   function(req, res) {
     if (req.isAuthenticated()){
