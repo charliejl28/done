@@ -5,18 +5,15 @@ var users = require('../app/controllers/users')
 	, mails = require('../app/controllers/mails');
 
 
-
-
-
     app.get('/login', users.login);
     app.get('/logout', users.logout);
-
 
     app.get('/users/', users.index);
     app.get('/users/me', users.me);
 
-    app.post('/users/saveRefreshToken/', users.saveRefreshToken);
+    app.get('/create', users.createMeeting);
 
+    app.post('/users/saveRefreshToken/', users.saveRefreshToken);
 
 
     app.get('/events/upcoming/', events.upcoming);

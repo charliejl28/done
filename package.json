@@ -23,7 +23,8 @@
     "googleapis": "*",
     "inbox": "*",
     "q": "*",
-    "hbs": "*"
+    "hbs": "*",
+    "nodemailer": "*"
 
   },
   "engine": "node >= 0.10.26",
