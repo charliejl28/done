@@ -265,7 +265,7 @@ exports.createMeeting = function(req, res){
     var contactEmails = [];
     var contactBoth = [];
     var event = {attendees : []};
-    
+
     for (var i = 0; i < contacts.length; i++){
         var contactName = contacts[i]
         var contactParts = contacts[i].split(' ');
@@ -306,7 +306,7 @@ exports.createMeeting = function(req, res){
                 .exec( function (err, user) {
                     if (!err && user && user[0]){
                         var user = user[0];
-                        addFreeBusy(req.user, event._id)
+                        addFreeBusy(user, event._id)
                     }
                 });
 
@@ -324,7 +324,7 @@ exports.createMeeting = function(req, res){
                     // the same transporter object for all e-mails
                     // setup e-mail data with unicode symbols
                     var email = contactEmails[i];
-                    var link = "http://localhost:5000/respond?emailid=" + email + "&eventid=" + event._id;
+                    var link = "http://done.herokuapp.com/respond?emailid=" + email + "&eventid=" + event._id;
                     var mailOptions = {
                         from: 'darshandesai216@gmail.com', // sender address
                         to: email, // list of receivers
@@ -417,9 +417,9 @@ function addFreeBusy(user, eventId){
 
                     event.save();
 
-                    if (event.responses.length == event.attendees.length){
-                        events.scheduleEvent(user, event);
-                    }
+                    //if (event.responses.length == event.attendees.length){
+                    events.scheduleEvent(user, event);
+                    //}
                     console.log(event);
                 });
 
