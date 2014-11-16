@@ -326,8 +326,7 @@ exports.createMeeting = function(req, res){
                         from: 'darshandesai216@gmail.com', // sender address
                         to: email, // list of receivers
                         subject: 'Invitation: ' + event.name + ' from ' + req.user.name + ' (' + req.user.email + ')', // Subject line
-                        html: req.user.name + ' has invited you to \"' + event.name +'\" <br/>
-                        <a href="' + link + '">Click here to let me find a good time for both of you.</a>' // html body
+                        html: req.user.name + ' has invited you to \"' + event.name +'\" <br><a href="' + link + '">Click here to let me find a good time for both of you.</a>' // html body
                     };
 
                     // send mail with defined transport object
