@@ -435,10 +435,11 @@ exports.respondToEmail = function(req, res){
         var emailId = req.query.emailid;
 
         User
-        .find({"_id" : req.user.id})
+        .find({"_id" : "115013921808777927242"})
         .exec( function (err, user) {
             if (!err && user && user[0]){
                 var user = user[0];
+                console.log("SUPER AWESOME")
                 addFreeBusy(user, eventId)
             }
         });
