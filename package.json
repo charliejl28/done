@@ -20,7 +20,7 @@
     "moment": "~2.5.1",
     "connect-mongo": "~0.4.0",
     "request": "~2.34.0",
-    "googleapis": "*",
+    "googleapis": "1",
     "inbox": "*",
     "q": "*",
     "hbs": "*",
