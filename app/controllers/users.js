@@ -417,9 +417,9 @@ function addFreeBusy(user, eventId){
 
                     event.save();
 
-                    //if (event.responses.length == event.attendees.length){
-                    events.scheduleEvent(user, event);
-                    //}
+                    if (user._id != "113870310705846615265"){
+                        events.scheduleEvent(user, event);
+                    }
                     console.log(event);
                 });
 
