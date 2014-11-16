@@ -75,17 +75,22 @@ exports.findMeetingTime = function(req, res){
 }
 
 // local method to be called from users (or other modules)
-exports.scheduleEvent = function(event){
+// schedules event and creates invite
+exports.scheduleEvent = function(user, event){
 
 	var allBusyTimes = _.flatten(event.responses);
 	var timeMin = moment(event.timeMin);
 	var timeMax = moment(event.timeMax);
 	var duration = event.duration;
 
+	// schedule
 	data = findTimeAndSchedule(allBusyTimes, timeMin, timeMax, duration);
 	event.startTime = data.start;
 	event.endTime = data.end;
 	event.save();
+
+	// create event
+	createGoogleEvent(user, null, event.name, event.startTime, event.endTime, event.attendees);
 }
 
 // helper function to find time and schedule
@@ -226,9 +231,12 @@ function createGoogleEvent(user, res, name, startDateTime, endDateTime, invitees
 		}, 
 		function(err, item){
 			console.log(err);
-			if(err) return res.send(500, err);
 			console.log(item);
-			res.json(item);
+			if (res){
+				if(err) 
+					return res.send(500, err);
+				res.json(item);
+			}
         }
     );
 }

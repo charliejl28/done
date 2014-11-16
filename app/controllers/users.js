@@ -407,7 +407,7 @@ exports.respondToEmail = function(req, res){
 
                                 event.save();
 
-                                events.scheduleEvent(event);
+                                events.scheduleEvent(user, event);
                                 console.log(event);
                             });
 
