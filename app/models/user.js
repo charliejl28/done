@@ -13,7 +13,9 @@ var UserSchema = new Schema({
 
 	refreshToken: String,
 	accessToken: String,
-
+	primaryCalendar: String,
+	primaryCalendarColor: String,
+	primaryCalendarSummary: String,
 	events: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
 	contacts: [{ type: Schema.Types.ObjectId, ref: 'Contact' }],
 	mails: [{ type: Schema.Types.ObjectId, ref: 'Mail' }],

@@ -105,6 +105,7 @@ function confirmAndGetContactSuggestions(res, user, queryString){
 }
 
 function getContactSuggestions(res, user, queryString){
+	console.log(queryString);
 	var url = "https://www.google.com/m8/feeds/contacts/" + user.email + "/full?access_token=" + user.accessToken + "&q=\"" + queryString + "\"&alt=json&max-results=10&v=3.0";
 	console.log(url);
 	request(
@@ -126,6 +127,13 @@ function getContactSuggestions(res, user, queryString){
 				var googleContacts = JSON.parse(body).feed.entry;
 				var ourContacts = [];
 
+				if (googleContacts === undefined){
+					console.log("here");
+					res.json("");
+
+				}
+				else {
+
 				for (var i = 0; i < googleContacts.length; i++){
 
 					var googleContact = googleContacts[i];
@@ -139,14 +147,19 @@ function getContactSuggestions(res, user, queryString){
 					if (googleContact.gd$email && googleContact.gd$email[0])
 						ourContact.email = googleContact.gd$email[0].address
 
-					ourContacts.push(ourContact);
+					ourContacts.push(ourContact.name + " " + ourContact.email);
 					console.log(ourContact)
 
 				}
 
 				// create json
 				var jsonResult = JSON.stringify(ourContacts);
-				res.json({'sucess' : true, 'data' : jsonResult});
+				console.log("SENDING!!!");
+				console.log(ourContacts);
+
+				res.json(ourContacts);
+				}
+
 			}
 			else {
 				console.log("failed");
