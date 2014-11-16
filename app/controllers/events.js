@@ -208,8 +208,8 @@ function createGoogleEvent(user, res, name, startDateTime, endDateTime, invitees
 	var attendees = [];
 	for (var i = 0; i < invitees.length; i++){
 		var attendee = {};
-		attendee['email'] = invitees[i].email;
-		attendee['displayName'] = invitees[i].name;
+		attendee['email'] = invitees[i];
+		//attendee['displayName'] = invitees[i].name;
 		attendees.push(attendee);
 	}
 

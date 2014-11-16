@@ -1,5 +1,5 @@
 {
-  "name": "edgy",
+  "name": "done",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -13,14 +13,14 @@
     "passport-google-oauth": "~0.1.5",
     "passport-google-token": ">=0",
     "passport-google": "~0.3.0",
-    "async": "~0.2.10",
+    "async": "~0.9.0",
     "google-calendar": "~1.3.1",
     "moment-range": "~1.0.0",
     "underscore": "~1.6.0",
     "moment": "~2.5.1",
     "connect-mongo": "~0.4.0",
-    "request": "~2.34.0",
-    "googleapis": "*",
+    "request": "~2.40.0",
+    "googleapis": "~1.0.21",
     "inbox": "*",
     "q": "*",
     "hbs": "*",
@@ -45,7 +45,7 @@
     "url": "https://github.com/darshandesai/Edgy.git"
   },
   "keywords": [
-    "Edgy"
+    "Done"
   ],
   "author": "Darshan Desai",
   "license": "None",

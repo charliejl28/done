@@ -6,11 +6,7 @@ var mongoose = require('mongoose')
 var EventSchema = new Schema({
 	name: String,
 	calendar: String,
-	attendees: [{
-		name: String,
-		email: String,
-		}
-	],
+	attendees: [],
 	responses: [{
 		busy: [],
 	}],
