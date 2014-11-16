@@ -48,7 +48,7 @@ exports.getFreeBusy = function(req, res){
 
 
 
-// NEED: eventID
+// public method for /event/schedule/
 // search through all invitees freeBusies
 // finds mutually free time long enough for meeting occurring within meeting scheduling window 
 // calls createGoogleEvent
@@ -68,6 +68,31 @@ exports.findMeetingTime = function(req, res){
 	var duration = 30;
 	var interval = 15;
 	var scheduleMax = moment("2014-11-18T00:00:00-05:00").subtract(interval, 'm');
+
+	data = findTimeAndSchedule(allBusyIntervals, scheduleMin, scheduleMax, duration);
+
+	res.json({'success': true, 'data': data});
+}
+
+// local method to be called from users (or other modules)
+exports.scheduleEvent = function(event){
+
+	var allBusyTimes = _.flatten(event.responses);
+	var timeMin = event.timeMin;
+	var timeMax = event.timeMax;
+	var duration = event.duration;
+
+	data = findTimeAndSchedule(allBusyIntervals, timeMin, timeMax, duration);
+	event.startTime = data.start;
+	event.endTime = data.end;
+	event.save();
+}
+
+// helper function to find time and schedule
+function findTimeAndSchedule(allBusyIntervals, scheduleMin, scheduleMax, duration){
+	var interval = 15;
+	var numInvites = allBusyIntervals.length;
+	scheduleMax.subtract(interval, 'm');
 
 	var meetingStart = scheduleMin;
 	// console.log("start: " + meetingStart.format());
@@ -159,12 +184,11 @@ exports.findMeetingTime = function(req, res){
 
 	data = {'start': meetingStart, 'end': meetingEnd};
 
-	res.json({'success': true, 'data': data});
-
+	return data;
 }
 
 exports.googleEvent = function(req, res){
-	createGoogleEvent(req.user, res, 'Meeting for coffee', '2014-11-17T22:15:00.000Z', '2014-11-17T22:45:00.000Z', [{'name': 'Charlie (work)', 'email':'charlie@firestopapp.com'}, {'name': 'Darshan', 'email':'darshan.desai17@gmail.com'}]);
+	createGoogleEvent(req.user, res, 'Meeting for coffee', '2014-11-17T23:15:00.000Z', '2014-11-17T23:45:00.000Z', [{'name': 'Charlie (school)', 'email':'cmj3@princeton.edu'}, {'name': 'Darshan', 'email':'darshan.desai17@gmail.com'}]);
 }
 
 // NEED: event name, start, end, invitees
