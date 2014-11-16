@@ -264,6 +264,8 @@ exports.createMeeting = function(req, res){
     }
     var contactEmails = [];
     var contactBoth = [];
+    var event = {attendees : []};
+    
     for (var i = 0; i < contacts.length; i++){
         var contactName = contacts[i]
         var contactParts = contacts[i].split(' ');
@@ -274,6 +276,9 @@ exports.createMeeting = function(req, res){
         taskName= taskName.replace('with', "");
         taskName = taskName.replace('With', "");
 
+        event.attendees.push(email);
+
+
     }
 
     console.log('task due date ');
@@ -281,11 +286,9 @@ exports.createMeeting = function(req, res){
     console.log(contactBoth);
 
 
-    var event = {attendees : []};
     event.name = taskName;
     //contactBoth.push({name: req.user.name, email:})
     event.attendees.push(req.user.email);
-
 
 
 
