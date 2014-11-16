@@ -20,7 +20,8 @@ var users = require('../app/controllers/users')
     app.get('/events/test/', events.test);
 
 
-    app.get('/contacts/update/', contacts.update);
+    // app.get('/contacts/update/', contacts.update);
+    app.get('/contacts/search/', contacts.search);
 
     app.get('/mail/top/', mails.top);
 
